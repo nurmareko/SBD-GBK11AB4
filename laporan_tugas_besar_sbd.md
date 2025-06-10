@@ -76,7 +76,7 @@
 
 ### 1. Tabel `user`
 - **Jenis Tabel**: Master  
-- **Laju**: 5.000/tahun  
+- **Laju**: 6.000/tahun  
 - **Deskripsi**: Menyimpan informasi pengguna sistem.
 
 #### Atribut:
@@ -100,7 +100,7 @@
 
 ### 2. Tabel `merchant`
 - **Jenis Tabel**: Master  
-- **Laju**: 50/tahun  
+- **Laju**: 25/tahun  
 - **Deskripsi**: Menyimpan informasi pemilik usaha kantin, termasuk login, lokasi pickup, dan rating.
 
 #### Atribut:
@@ -111,9 +111,9 @@
 | name             | VARCHAR(100) | Not Null                    |
 | email            | VARCHAR(100) | Not Null, Unique            |
 | password\_hash   | TEXT         | Not Null                    |
-| phone\_number    | VARCHAR(20)  | Opsional                    |
+| phone\_number    | VARCHAR(20)  | Not Null                    |
 | store\_name      | VARCHAR(100) | Not Null                    |
-| pickup\_location | TEXT         | Opsional                    |
+| pickup\_location | TEXT         | Not Null                    |
 | rating\_avg      | DECIMAL(3,2) | Default 0.00                |
 | rating\_count    | INT          | Default 0                   |
 
@@ -121,7 +121,7 @@
 
 ### 3. Tabel `product`
 - **Jenis Tabel**: Master  
-- **Laju**: 5.000/tahun  
+- **Laju**: 500/tahun  
 - **Deskripsi**: Menyimpan data menu yang ditawarkan oleh merchant termasuk stok dan waktu persiapan.
 
 #### Atribut:
@@ -133,16 +133,16 @@
 | name                       | VARCHAR(100)  | Not Null                    |
 | price                      | DECIMAL(12,2) | Not Null                    |
 | stock                      | INT           | Default 0                   |
-| last\_stock\_update        | DATETIME      | Opsional                    |
-| preparation\_time\_minutes | INT           | Opsional                    |
+| last\_stock\_update        | DATETIME      | Not Null                    |
+| preparation\_time\_minutes | INT           | Not Null                    |
 | is\_special                | BOOLEAN       | Default FALSE               |
-| special\_available\_date   | DATE          | Opsional                    |
+| special\_available\_date   | DATE          | Not Null                    |
 
 ---
 
 ### 4. Tabel `customer_order`
 - **Jenis Tabel**: Transaksi  
-- **Laju**: 50.000/tahun  
+- **Laju**: 60.000/tahun  
 - **Deskripsi**: Mencatat transaksi pemesanan makanan oleh pengguna.
 
 #### Atribut:
@@ -152,13 +152,12 @@
 | order\_id                    | INT                                                         | Primary Key, Auto Increment |
 | user\_id                     | INT                                                         | Foreign Key ke `user`       |
 | order\_datetime              | TIMESTAMP                                                   | Default CURRENT\_TIMESTAMP  |
-| required\_datetime           | TIMESTAMP                                                   | Not Null                    |
-| estimated\_duration\_minutes | INT                                                         | Opsional                    |
+| required\_datetime           | TIMESTAMP                                                   | Default CURRENT\_TIMESTAMP  |
+| estimated\_duration\_minutes | INT                                                         | Not Null                    |
 | total\_price                 | DECIMAL(12,2)                                               | Not Null                    |
 | is\_delivery                 | BOOLEAN                                                     | Default FALSE               |
 | delivery\_location           | VARCHAR(100)                                                | Opsional                    |
 | order\_status                | ENUM('pending','preparing','ready','completed','cancelled') | Default 'pending'           |
-| payment\_status              | ENUM('pending','paid')                                      | Default 'pending'           |
 
 ---
 
@@ -181,7 +180,7 @@
 
 ### 6. Tabel `payment`
 - **Jenis Tabel**: Transaksi  
-- **Laju**: 50.000/tahun  
+- **Laju**: 60.000/tahun  
 - **Deskripsi**: Menyimpan informasi metode dan jumlah pembayaran untuk setiap pesanan.
 
 #### Atribut:
@@ -191,7 +190,6 @@
 | payment\_id     | INT                                      | Primary Key, Auto Increment     |
 | order\_id       | INT                                      | Foreign Key ke `customer_order` |
 | method          | ENUM('wallet','ewallet','mixed','debit') | Not Null                        |
-| ewallet\_type   | ENUM('OVO','GoPay','Dana','ShopeePay')   | Opsional                        |
 | ewallet\_amount | DECIMAL(12,2)                            | Default 0.00                    |
 | wallet\_amount  | DECIMAL(12,2)                            | Default 0.00                    |
 | debit\_amount   | DECIMAL(12,2)                            | Default 0.00                    |
@@ -219,7 +217,7 @@
 
 ### 8. Tabel `voucher`
 - **Jenis Tabel**: Referensi  
-- **Laju**: 200/tahun  
+- **Laju**: 100/tahun  
 - **Deskripsi**: Menyimpan informasi kode voucher, nilai diskon, dan batas penggunaan.
 
 #### Atribut:
@@ -240,7 +238,7 @@
 
 ### 9. Tabel `promo`
 - **Jenis Tabel**: Referensi  
-- **Laju**: 100/tahun  
+- **Laju**: 50/tahun  
 - **Deskripsi**: Menyimpan data promo berdasarkan waktu atau volume pengguna serta merchant terkait.
 
 #### Atribut:
