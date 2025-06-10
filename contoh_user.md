@@ -221,3 +221,32 @@ review_text: "Sotonya mantap, porsi besar. es teh juga tidak terlalu manis"
 | created\_at   | 2025-06-12 15:00:00                                          |
 
 ---
+
+## **Mendapatkan Poin**
+Setelah pengguna memberikan ulasan makan berhak mendapat poin.
+
+**point:**
+```
+rewar_point: 15
+```
+
+**Tabel User:**
+
+---
+
+| Atrbut             | Data                          |
+| ------------------ | ----------------------------- |
+| user\_id           | 1                             |
+| username           | maikelhulu                    |
+| email              | maikelhulu@student.telu.ac.id |
+| password\_hash     | $2b$12$@#$@$fwqdfF#@R3        |
+| full\_name         | Maikel Hulu                   |
+| phone\_number      | 082110778883                  |
+| role               | student                       |
+| is\_dorm\_resident | TRUE                          |
+| dorm\_room         | Asrama Putra 10, Kamar 319    |
+| verified           | TRUE                          |
+| wallet\_balance    | 100000.00                     |
+| reward\_point      | 15                             |
+
+---
