@@ -63,7 +63,7 @@
 
 ## Entity Relationship Diagram (ERD)
 
-![ERD Diagram](smart_canteen_ERD.png)
+###### ![ERD Diagram](smart_canteen_ERD.png)
 
 ---
 
@@ -260,5 +260,272 @@
 ---
 
 ## Sintak SQL
+
+### Data Definition Language (DDL)
+
+```mysql
+CREATE DATABASE smart_canteen;
+-- ===========================================================================
+
+CREATE TABLE user (
+  user_id INT AUTO_INCREMENT PRIMARY KEY,
+  
+  -- Login credentials
+  username VARCHAR(50) UNIQUE,
+  email VARCHAR(100) NOT NULL UNIQUE,
+  password_hash TEXT NOT NULL,
+  
+  -- Personal information
+  full_name VARCHAR(100) NOT NULL,
+  phone_number VARCHAR(20),
+  role ENUM('student', 'guest') NOT NULL,
+  
+  -- Residence status for student
+  is_dorm_resident BOOLEAN DEFAULT FALSE,
+  dorm_room VARCHAR(50),
+  
+  -- Account status and wallet
+  verified BOOLEAN DEFAULT FALSE,
+  wallet_balance DECIMAL(12,2) DEFAULT 0.00 CHECK (wallet_balance <= 2000000),
+  reward_point INT DEFAULT 0
+);
+
+-- ===========================================================================
+CREATE TABLE merchant (
+  merchant_id INT AUTO_INCREMENT PRIMARY KEY,
+  
+  -- Personal info and login credentials
+  name VARCHAR(100) NOT NULL,
+  email VARCHAR(100) NOT NULL UNIQUE,
+  password_hash TEXT NOT NULL,
+  phone_number VARCHAR(20),
+  
+  -- Business info
+  store_name VARCHAR(100) NOT NULL,
+  pickup_location TEXT,
+  
+  -- Rating info
+  rating_avg DECIMAL(3,2) DEFAULT 0.00,
+  rating_count INT DEFAULT 0
+);
+
+-- ===========================================================================
+CREATE TABLE product (
+  product_id INT AUTO_INCREMENT PRIMARY KEY,
+  
+  -- Relationship
+  merchant_id INT NOT NULL,
+  FOREIGN KEY (merchant_id) REFERENCES merchant(merchant_id),
+  
+  -- Product details
+  name VARCHAR(100) NOT NULL,
+  price DECIMAL(12,2) NOT NULL,
+  stock INT DEFAULT 0,
+  last_stock_update datetime,
+  preparation_time_minutes INT,
+  
+  -- Special product info
+  is_special BOOLEAN DEFAULT FALSE,
+  special_available_date DATE
+);
+
+-- ===========================================================================
+CREATE TABLE customer_order (
+  order_id INT AUTO_INCREMENT PRIMARY KEY,
+  
+  -- Relationship
+  user_id INT,
+  FOREIGN KEY (user_id) REFERENCES user(user_id),
+  
+  -- Order time and price
+  order_datetime TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  required_datetime TIMESTAMP NOT NULL,
+  estimated_duration_minutes INT, -- after the order accepted
+  total_price DECIMAL(12,2) NOT NULL,
+  
+  -- Delivery details
+  is_delivery BOOLEAN DEFAULT FALSE,
+  delivery_location VARCHAR(100),
+  
+  -- Status
+  order_status ENUM('pending', 'preparing', 'ready', 'completed', 'cancelled') DEFAULT 'pending',
+  payment_status ENUM('pending', 'paid') DEFAULT 'pending'
+);
+
+-- ===========================================================================
+CREATE TABLE order_detail (
+  order_detail_id INT AUTO_INCREMENT PRIMARY KEY,
+  
+  -- Relationships
+  order_id INT NOT NULL,
+  product_id INT NOT NULL,
+  FOREIGN KEY (order_id) REFERENCES customer_order(order_id),
+  FOREIGN KEY (product_id) REFERENCES product(product_id),
+  
+  -- Purchase info
+  unit_price DECIMAL(12,2) NOT NULL,
+  quantity INT NOT NULL DEFAULT 1
+);
+
+-- ===========================================================================
+CREATE TABLE payment (
+  payment_id INT AUTO_INCREMENT PRIMARY KEY,
+  
+  -- Relationship
+  order_id INT NOT NULL,
+  FOREIGN KEY (order_id) REFERENCES customer_order(order_id),
+  
+  -- Payment method
+  method ENUM('wallet', 'ewallet', 'mixed', 'debit') NOT NULL,
+  
+  -- eWallet
+  ewallet_type ENUM('OVO', 'GoPay', 'Dana', 'ShopeePay'),
+  ewallet_amount DECIMAL(12,2) DEFAULT 0.00,
+  
+  -- Wallet and debit
+  wallet_amount DECIMAL(12,2) DEFAULT 0.00,
+  debit_amount DECIMAL(12,2) DEFAULT 0.00
+);
+
+-- ===========================================================================
+CREATE TABLE rating (
+  rating_id INT AUTO_INCREMENT PRIMARY KEY,
+  
+  -- Relationships
+  user_id INT NOT NULL,
+  merchant_id INT NOT NULL,
+  order_id INT NOT NULL,
+  FOREIGN KEY (user_id) REFERENCES user(user_id),
+  FOREIGN KEY (merchant_id) REFERENCES merchant(merchant_id),
+  FOREIGN KEY (order_id) REFERENCES customer_order(order_id),
+  
+  -- Rating content
+  rating_value INT NOT NULL CHECK (rating_value BETWEEN 1 AND 5),
+  review_text TEXT,
+  
+  -- Creation time
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+-- ===========================================================================
+CREATE TABLE voucher (
+  voucher_id INT AUTO_INCREMENT PRIMARY KEY,
+  
+  -- Voucher code and value
+  code VARCHAR(50) UNIQUE NOT NULL,
+  price INT NOT NULL,
+  value DECIMAL(12,2) NOT NULL,
+  min_transaction DECIMAL(12,2),
+  
+  -- Valid period
+  start_date DATE,
+  end_date DATE,
+  
+  -- Issuer
+  merchant_id INT,
+  FOREIGN KEY (merchant_id) REFERENCES merchant(merchant_id),
+  
+  -- Redemption
+  max_redemption INT NOT NULL,
+  current_redemption INT DEFAULT 0
+);
+
+-- ===========================================================================
+CREATE TABLE promo (
+  promo_id INT AUTO_INCREMENT PRIMARY KEY,
+  
+  -- Promo details
+  name VARCHAR(100) NOT NULL,
+  type ENUM('volume', 'time') NOT NULL,
+  
+  -- Relationship
+  merchant_id INT,
+  FOREIGN KEY (merchant_id) REFERENCES merchant(merchant_id),
+  
+  -- Time-based promo
+  start_time TIMESTAMP,
+  end_time TIMESTAMP,
+  
+  -- Volume-based promo
+  volume_limit INT,
+  used_count INT DEFAULT 0
+);
+```
+
+### Data Manipulation Language (DML)
+
+```mysql
+INSERT INTO user (username, email, password_hash, full_name, phone_number, role, is_dorm_resident, dorm_room, verified, wallet_balance, reward_point)
+VALUES
+  ('maikelhulu', 'maikelhulu@student.telu.ac.id', '$2b$12$hashvalue2', 'Maikel Hulu', 8123456782, 'student', True, 'Asrama Putra 10, Kamar 319', True, 273714.55, 691),
+  ('yehezkielenrico', 'yehezkielenrico@student.telu.ac.id', '$2b$12$hashvalue1', 'Yehezkiel enrico', 8123456781, 'student', False, '', True, 821177.44, 14),
+  ('rahmawatidewi', 'rahmawati@yandex.ru', '$2b$12$hashvalue3', 'Rahmawati Dewi', 8123456783, 'guest', False, '', True, 962609.24, 346),
+  ('budisantoso', 'budi@email.com', '$2b$12$hashvalue4', 'Budi Santoso', 8123456784, 'guest', False, '', True, 839170.99, 627),
+  ('indahlestari', 'indah@email.com', '$2b$12$hashvalue5', 'Indah Lestari', 8123456785, 'guest', False, '', False, 0.00, 0);
+
+INSERT INTO merchant (name, email, password_hash, phone_number, store_name, pickup_location, rating_avg, rating_count)
+VALUES
+  ('Syamsudin T', 'syamsudin@email.com', '$2b$12$merchanthash1', 8987654321, 'Rasa Nusantara', 'Gerai 01', 4.58, 354),
+  ('Rahmat M', 'rahmat@email.com', '$2b$12$merchanthash2', 8987654322, 'Dapur Lezat', 'Gerai 02', 4.74, 376),
+  ('Siska S', 'siska@email.com', '$2b$12$merchanthash3', 8987654323, 'Santapan Sehat', 'Gerai 03', 4.57, 347),
+  ('Ihkam A', 'ihkam@email.com', '$2b$12$merchanthash4', 8987654324, 'Warung Selera', 'Gerai 04', 4.72, 171),
+  ('Kurniawati J', 'kurniawati@email.com', '$2b$12$merchanthash5', 8987654325, 'piyo', 'Gerai 05', 4.92, 247);
+
+INSERT INTO product (merchant_id, name, price, stock, preparation_time_minutes, is_special, last_stock_update, special_available_date)
+VALUES
+  (1, 'Soto medan', 18000.0, 27, 20, False, '2025-06-20 00:00:00', null),
+  (1, 'Es Teh Manis', 5000.00, 12, 5, False, '2025-06-20 00:00:00', null),
+  (3, 'Mie Kuah Nusantara', 17000.00, 25, 30, False, '2025-06-20 00:00:00', null),
+  (3, 'Dimsum mix isi 4', 22000.00, 17, 10, False, '2025-06-20 00:00:00', null),
+  (5, 'Katsu Curry', 30000.00, 19, 15, True, '2025-06-20 00:00:00', '2025-06-20 00:00:00');
+
+INSERT INTO customer_order (user_id, order_datetime, required_datetime, estimated_duration_minutes, completed_datetime, total_price, is_delivery, delivery_location, order_status)
+VALUES
+  (3, '2025-06-03 07:24:50.735000', '2025-06-10 08:24:50.735000', 57, '2025-06-10 07:50:50.735000', 60000.00, False, '', 'completed'),
+  (1, '2025-06-06 07:24:50.735000', '2025-06-11 08:24:50.735000', 48, '2025-06-11 08:30:50.735000', 49000.00, True, 'Room 103', 'completed'),
+  (5, '2025-05-31 07:24:50.735000', '2025-06-08 08:24:50.735000', 39, '2025-06-10 07:24:50.735000', 30000.00, False, '', 'pending'),
+  (4, '2025-05-29 07:24:50.735000', '2025-06-10 08:24:50.735000', 41, '2025-06-10 07:24:50.735000', 90000.00, False, '', 'pending'),
+  (2, '2025-06-01 07:24:50.735000', '2025-06-09 08:24:50.735000', 27, '2025-06-10 07:24:50.735000', 25000.00, True, 'Room 106', 'ready');
+
+INSERT INTO order_detail (order_id, product_id, unit_price, quantity)
+VALUES
+  (5, 2, 10000.00, 3),
+  (4, 4, 90000.00, 1),
+  (1, 5, 49000.00, 1),
+  (3, 1, 40000.00, 1),
+  (3, 5, 20000.00, 1);
+
+INSERT INTO payment (order_id, method, ewallet_amount, wallet_amount, debit_amount)
+VALUES
+  (1, 'wallet', 0.0, 49000.00, 0.00),
+  (2, 'ewallet', 30000.00, 0.00, 0.00),
+  (3, 'mixed', 50000.00, 10000.00, 0.00),
+  (4, 'ewallet', 90000.00, 0.00, 0.00),
+  (5, 'mixed', 5000.00, 5000.00, 0.00);
+
+INSERT INTO rating (user_id, merchant_id, order_id, rating_value, review_text, created_at)
+VALUES
+  (1, 2, 4, 5, 'mantab', '2025-06-11 03:59:01.319243'),
+  (1, 2, 1, 1, '', '2025-06-11 03:59:01.319253'),
+  (4, 5, 4, 2, '', '2025-06-11 03:59:01.319256'),
+  (3, 5, 2, 3, 'biasa aja', '2025-06-11 03:59:01.319258'),
+  (1, 4, 3, 5, 'enak', '2025-06-11 03:59:01.319261');
+
+INSERT INTO voucher (code, value, min_transaction, start_date, end_date, merchant_id, max_redemption, current_redemption)
+VALUES
+  ('DISC10', 11000.00, 30000.00, '2025-06-11', '2025-07-11', 5, 100, 11),
+  ('DISC20', 25000.00, 100000.00, '2025-06-11', '2025-07-11', 3, 100, 37),
+  ('DISC30', 30000.00, 150000.00, '2025-06-11', '2025-07-11', 4, 100, 17),
+  ('DISC40', 5000.00, 30000.00, '2025-06-11', '2025-07-11', 3, 100, 41),
+  ('DISC50', 20000.00, 90000.00, '2025-06-11', '2025-07-11', 5, 100, 0);
+
+INSERT INTO promo (name, type, merchant_id, start_time, end_time, volume_limit, used_count)
+VALUES
+  ('Promo 1', 'time', 4, '2025-06-11 03:59:01.321235', '2025-06-18 03:59:01.321237', NULL, 14),
+  ('Promo 2', 'time', 1, '2025-06-11 03:59:01.321246', '2025-06-18 03:59:01.321247', NULL, 12),
+  ('Promo 3', 'time', 3, '2025-06-11 03:59:01.321251', '2025-06-18 03:59:01.321251', NULL, 19),
+  ('Promo 4', 'volume', 3, '2025-06-11 03:59:01.321254', '2025-06-18 03:59:01.321255', 100.0, 3),
+  ('Promo 5', 'time', 2, '2025-06-11 03:59:01.321260', '2025-06-18 03:59:01.321261', NULL, 18);
+```
 
 ---
