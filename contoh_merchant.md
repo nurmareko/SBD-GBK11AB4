@@ -77,6 +77,7 @@ delivery_location: Asrama Putra 10, Kamar 319
 | estimated_duration_minutes  | 30                         |
 | completed_datetime          |                            |
 | total_price                 | 64.000                     |
+| pickup_location              |                            |
 | is_delivery                 | TRUE                       |
 | delivery_location           | Asrama Putra 10, Kamar 319 |
 | order_status                | pending                    |
@@ -142,11 +143,11 @@ review_text: "Sotonya mantap, porsi besar. es teh juga tidak terlalu manis"
 | --------------- | ------------------------------------ |
 | merchant_id     | 1                                    |
 | name            | Ibu Ros                              |
-| email           | warungmedan@telkomuniversity.ac.id   |
+| email           | rossi@email.com |
 | password_hash   | $2b$12$@#jd9832jhf##                   |
 | phone_number    | 081234567890                         |
 | store_name      | Warung Medan                         |
-| pickup_location | Kantin Teknik, Blok C                |
+| pickup_location | kedai 07        |
 | rating_avg      | 4.00                                 |
 | rating_count    | 1                                    |
 
