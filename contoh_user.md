@@ -91,7 +91,9 @@ required_datetime: 2025-06-12 13:00:00
 | order\_datetime              | 2025-06-12 07:30:00        |
 | required\_datetime           | 2025-06-12 13:00:00        |
 | estimated\_duration\_minutes | 30                         |
+| completed_datetime           |                            |
 | total\_price                 | 64.000                     |
+| pickup_location              |                            |
 | is\_delivery                 | TRUE                       |
 | delivery\_location           | Asrama Putra 10, Kamar 319 |
 | order\_status                | pending                    |
@@ -190,7 +192,9 @@ order_status: completed
 | order\_datetime              | 2025-06-12 07:30:00        |
 | required\_datetime           | 2025-06-12 13:00:00        |
 | estimated\_duration\_minutes | 30                         |
+| completed_datetime           | 2025-06-12 12:48:00        |
 | total\_price                 | 64.000                     |
+| pickup_location              |                            |
 | is\_delivery                 | TRUE                       |
 | delivery\_location           | Asrama Putra 10, Kamar 319 |
 | order\_status                | completed                  |

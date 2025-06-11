@@ -154,7 +154,9 @@
 | order\_datetime              | TIMESTAMP                                                   | Default CURRENT\_TIMESTAMP  |
 | required\_datetime           | TIMESTAMP                                                   | Default CURRENT\_TIMESTAMP  |
 | estimated\_duration\_minutes | INT                                                         | Not Null                    |
+| completed_datetime | TIMESTAMP                                                         | Not Null                    |
 | total\_price                 | DECIMAL(12,2)                                               | Not Null                    |
+| pickup_location | VARCHAR(100)                                                | Opsional                    |
 | is\_delivery                 | BOOLEAN                                                     | Default FALSE               |
 | delivery\_location           | VARCHAR(100)                                                | Opsional                    |
 | order\_status                | ENUM('pending','preparing','ready','completed','cancelled') | Default 'pending'           |
