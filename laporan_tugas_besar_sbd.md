@@ -16,6 +16,7 @@
 3. [Entity Relationship Diagram (ERD)](#entity-relationship-diagram-erd)
 4. [Skema Relasi](#skema-relasi)
 5. [Deskripsi Tabel](#deskripsi-tabel)
+6. [Sintak SQL](#sintak-sql)
 
 ---
 
@@ -255,5 +256,9 @@
 | end\_time     | TIMESTAMP             | Opsional                    |
 | volume\_limit | INT                   | Opsional                    |
 | used\_count   | INT                   | Default 0                   |
+
+---
+
+## Sintak SQL
 
 ---
